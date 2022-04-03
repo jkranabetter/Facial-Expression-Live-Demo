@@ -33,7 +33,7 @@ webcam = cv2.VideoCapture(0)
 
 last_emotion = ''
 
-while (True):
+while (webcam.isOpened()):
     ret, frame = webcam.read()
     
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -47,11 +47,9 @@ while (True):
         hog_features, hog_image = hog(face_crop, orientations=8, pixels_per_cell=(16, 16),
                                         cells_per_block=(1, 1), visualize=True)
 
-        image1 = np.uint8(face_crop)
-        # imageio.imwrite('temp.jpg', image1)
-        # image2 = cv2.imread('temp.jpg')
+        image_int8 = np.uint8(face_crop)
         face_rectangles = [dlib.rectangle(left=1, top=1, right=47, bottom=47)]
-        face_landmarks = fetch_landmarks(image1, face_rectangles, predictor)
+        face_landmarks = fetch_landmarks(image_int8, face_rectangles, predictor)
         face_landmarks = face_landmarks.getA1()
 
         datas = np.concatenate((face_landmarks, hog_features), axis=None)
