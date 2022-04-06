@@ -1,9 +1,8 @@
-import cv2, sys, numpy as np, os
-import copy
+import cv2, numpy as np, os
 import _pickle as cPickle
 from skimage.feature import hog
-import imageio
 import dlib
+from skimage import data, exposure
 
 def fetch_landmarks(image, rects, predictor):
         if len(rects) > 1:
@@ -33,10 +32,7 @@ webcam = cv2.VideoCapture(0)
 
 last_emotion = ''
 
-print('here')
-
 while (webcam.isOpened()):
-    print('in loop')
     ret, frame = webcam.read()
     
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -46,8 +42,11 @@ while (webcam.isOpened()):
         
         face_crop = gray[y:y+h, x:x+w]
         face_crop = cv2.resize(face_crop, (48,48), interpolation = cv2.INTER_AREA)
-    
+
         hog_features, hog_image = hog(face_crop, orientations=8, pixels_per_cell=(16, 16),
+                                        cells_per_block=(1, 1), visualize=True)
+    
+        hog_features1, hog_image1 = hog(gray, orientations=8, pixels_per_cell=(16, 16),
                                         cells_per_block=(1, 1), visualize=True)
 
         image_int8 = np.uint8(face_crop)
@@ -68,11 +67,11 @@ while (webcam.isOpened()):
             last_emotion = emotion
             print(emotion + " confidence level of " + str(max_value*100) + "%")
             cv2.putText(image, emotion, (x + 6, y - 6), font, 1.0, (255, 255, 255), 1)
-            cv2.imshow('FER',image)
+            cv2.imshow('FER',hog_image1)
             cv2.waitKey(25)
         else:
             cv2.putText(image, last_emotion, (x + 6, y - 6), font, 1.0, (255, 255, 255), 1)
-            cv2.imshow('FER',image)
+            cv2.imshow('FER',hog_image1)
             cv2.waitKey(25)
 
 

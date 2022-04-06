@@ -33,13 +33,12 @@ webcam = cv2.VideoCapture(0)
 
 last_emotion = ''
 
-print('here')
-
 while (webcam.isOpened()):
-    print('in loop')
     ret, frame = webcam.read()
     
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    frame_height = len(gray)
+    frame_width = len(gray[0])
     faces = face_cascade.detectMultiScale(gray, 1.3, 5)
     for (x,y,w,h) in faces:
         image = cv2.rectangle(frame,(x,y),(x+w,y+h),(255,0,0),2)
@@ -53,8 +52,17 @@ while (webcam.isOpened()):
         image_int8 = np.uint8(face_crop)
         face_rectangles = [dlib.rectangle(left=1, top=1, right=47, bottom=47)]
         face_landmarks = fetch_landmarks(image_int8, face_rectangles, predictor)
-        face_landmarks = face_landmarks.getA1()
 
+        # Display the landmarks
+        for item in enumerate(face_landmarks):
+	    # Draw the circle to mark the keypoint 
+            yeet = item[1].tolist()[0]
+
+            x_land = round(yeet[0]*w/48)+x
+            y_land = round(yeet[1]*h/48)+y
+            cv2.circle(image, (x_land, y_land), 1, (0, 0, 255), -1)
+
+        face_landmarks = face_landmarks.getA1()
         datas = np.concatenate((face_landmarks, hog_features), axis=None)
 
         results = model.predict([datas])
@@ -66,12 +74,9 @@ while (webcam.isOpened()):
         if max_value > 0.5:
             emotion = emotions[results[0]]
             last_emotion = emotion
-            print(emotion + " confidence level of " + str(max_value*100) + "%")
-            cv2.putText(image, emotion, (x + 6, y - 6), font, 1.0, (255, 255, 255), 1)
             cv2.imshow('FER',image)
             cv2.waitKey(25)
         else:
-            cv2.putText(image, last_emotion, (x + 6, y - 6), font, 1.0, (255, 255, 255), 1)
             cv2.imshow('FER',image)
             cv2.waitKey(25)
 
