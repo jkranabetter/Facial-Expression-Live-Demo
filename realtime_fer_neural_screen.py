@@ -3,6 +3,14 @@ from tensorflow import keras
 import copy
 from PIL import ImageGrab
 
+'''
+Emotion Recognition
+Run neural prediction on screen capture
+
+Joshua Kranabetter and Taif Anjum
+2022
+'''
+
 model = keras.models.load_model("./model_FER2013_7_mobileNet")
 emotions = ["Anger", "Disgust", "Fear", "Happy", "Neutral", "Sadness", "Surprise"]
 #emotions = ["anger", "contempt", "disgust", "fear", "happy", "sadness", "surprise"]
