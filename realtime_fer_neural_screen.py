@@ -36,10 +36,6 @@ while (True):
     cv2.imshow('FER',img)
     cv2.waitKey(25)
 
-    
-            
-        
-
 # After the loop release the cap object
 #webcam.release()
 # Destroy all the windows
